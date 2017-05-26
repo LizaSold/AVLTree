@@ -11,142 +11,148 @@ import java.util.TreeSet;
 // Программа AVL дерево
 // Позволяет добавлять и удалять узлы графа
 
-class Node
+
+
+
+public class AVLTree
 {
-    int key, height; //Значение и высота (высота нужна для проверки графа на признак AVL)
-    Node left, right; //Левый и правый узел
 
-    Node(int number) { key = number; height = 1; }
-}
-
-
-
-class AVLTree
-{
-    Node root;
-
-
-    int height(Node node)
+    private class Node
     {
-        if (node == null)
-            return 0;
-        return node.height;
-    }
+        int key, height; //Значение и высота (высота нужна для проверки графа на признак AVL)
+        Node left, right; //Левый и правый узел
 
-    int max(int a, int b)
-    {
-        if(a>b) return a;
-        return b;
-    }
+        Node(int number) { key = number; height = 1; }
 
-    //Печать
-    void print(Node node)
-    {
-        if (node != null)
+        // Левый поворот на x
+        public Node rotateLeft()
         {
-            System.out.print(node.key + " ");
-            print(node.left); //Рекурсивно печатаем
-            print(node.right);
+
+            Node y = this.right;
+            Node temp = y.left;
+            y.left = this;
+            this.right = temp;
+
+            this.height = Math.max(height(this.left), height(this.right)) + 1;
+            y.height = Math.max(height(y.left), height(y.right)) + 1;
+
+            return y;
         }
+
+        // Правый поворот графа на узле y
+        public Node rotateRight()
+        {
+            Node x = this.left;
+            Node temp = x.right;
+            x.right = this;
+            this.left = temp;
+
+
+            this.height = Math.max(height(this.left), height(this.right)) + 1;
+            x.height = Math.max(height(x.left), height(x.right)) + 1;
+
+            return x;
+        }
+
+        // Сбалансировано ил дерево
+        public int ifBalanced()
+        {
+            if (this == null) return 0;
+            return height(this.left) - height(this.right);
+        }
+
+        public int countChildred(){
+            if(this==null) return 0;
+            if( this.left != null && this.right != null){
+                return 2 + this.left.countChildred() + this.right.countChildred();
+            }
+            if( this.left != null){
+                return 1+ this.left.countChildred();
+            }
+            if( this.right != null){
+                return 1+ this.right.countChildred();
+            }
+            return 0;
+        }
+
+        public int countElements(){
+            if(this==null) return 0;
+            return 1+ this.countChildred();
+        }
+
+
+
+
+
     }
 
-    void printBalance(Node n) {
-        if (n != null) {
-            printBalance(n.left);
-            System.out.printf("%s ", Math.abs(ifBalanced(n)));
-            printBalance(n.right);
-        }
+
+    private Node root;
+
+
+
+
+
+    public int height(Node n)
+    {
+        if (n == null)
+            return 0;
+        return n.height;
     }
 
-    void addToSorderdSet(SortedSet<Integer> r, Node n){
+    public int height()
+    {
+        if (this.root == null)
+            return 0;
+        return height(this.root);
+    }
+
+
+    public int countElements(){
+        return this.root.countElements();
+    }
+    public int ifBalanced(){
+        return this.root.ifBalanced();
+    }
+
+
+    public void addToSorderdSet(SortedSet<Integer> r, Node n){
         if (n != null) {
             r.add(n.key);
-            if(n.left != null){
-                addToSorderdSet(r, n.left);
-            }
-            if(n.right != null){
-                addToSorderdSet(r, n.right);
-            }
+            if(n.left != null) addToSorderdSet(r, n.left);
+
+            if(n.right != null) addToSorderdSet(r, n.right);
+
         }
     }
-    SortedSet<Integer> getSortedSet(Node n){
+    public SortedSet<Integer> getSortedSet(){
         SortedSet<Integer> r = new TreeSet<>();
-        if (n != null) {
-            addToSorderdSet(r, n);
+        if (this.root != null) {
+            addToSorderdSet(r, this.root);
         }
         return r;
     }
 
-
-    // Правый поворот графа на узле y
-    Node rotateRight(Node y)
-    {
-        Node x = y.left;
-        Node T2 = x.right;
-        x.right = y;
-        y.left = T2;
-
-
-        y.height = max(height(y.left), height(y.right)) + 1;
-        x.height = max(height(x.left), height(x.right)) + 1;
-
-        return x;
-    }
-
-    // Левый поворот на x
-    Node rotateLeft(Node x)
-    {
-        Node y = x.right;
-        Node T2 = y.left;
-        y.left = x;
-        x.right = T2;
-
-        x.height = max(height(x.left), height(x.right)) + 1;
-        y.height = max(height(y.left), height(y.right)) + 1;
-
-        return y;
-    }
-
-    // Сбалансировано ил дерево
-    int ifBalanced(Node node)
-    {
-        if (node == null) return 0;
-        return height(node.left) - height(node.right);
-    }
-
-    int countChildred(Node node){
-        if(node==null) return 0;
-        if( node.left != null && node.right != null){
-            return 2 + countChildred(node.left) + countChildred(node.right);
-        }
-        if( node.left != null){
-            return 1+ countChildred(node.left);
-        }
-        if( node.right != null){
-            return 1+ countChildred(node.right);
-        }
-        return 0;
-    }
-    int countElements(Node node){
-        if(node==null) return 0;
-        return 1+ countChildred(node);
+    boolean contains( int key){
+       return this.contains(this.root, key);
     }
 
     boolean contains(Node n, int key){
         if(n == null) return false;
-        if(n.key==key){ return true; }
+        if(n.key==key)  return true;
         return contains(n.left, key) || contains(n.right, key);
     }
 
 
-
+    void add(int key){
+        this.root = this.add(this.root, key);
+    }
 
 
     Node add(Node node, int key)
     {
         //Чтобы добавить новый элемент в avl дерево, надо сначала добавить элемент по правилам BST дерева
-        if (node == null)
-            return (new Node(key));
+        if (node == null) return (new Node(key));
 
         if (key < node.key)
             node.left = add(node.left, key);
@@ -156,33 +162,33 @@ class AVLTree
             return node;
 
         // Увеличить высоту
-        node.height = 1 + max(height(node.left),
+        node.height = 1 + Math.max(height(node.left),
                 height(node.right));
 
         // Сбалансировать по AVL правилам
-        int balance = ifBalanced(node);
+        int balance = node.ifBalanced();
 
 
         // Влево Влево
         if (balance > 1 && key < node.left.key)
-            return rotateRight(node);
+            return node.rotateRight();
 
         // Вправо Вправо
         if (balance < -1 && key > node.right.key)
-            return rotateLeft(node);
+            return node.rotateLeft();
 
         // Влево Вправо
         if (balance > 1 && key > node.left.key)
         {
-            node.left = rotateLeft(node.left);
-            return rotateRight(node);
+            node.left = node.left.rotateLeft();
+            return node.rotateRight();
         }
 
         // Вправо Влево
         if (balance < -1 && key < node.right.key)
         {
-            node.right = rotateRight(node.right);
-            return rotateLeft(node);
+            node.right = node.right.rotateRight();
+            return node.rotateLeft();
         }
 
         return node;
@@ -198,7 +204,10 @@ class AVLTree
         return current;
     }
 
-    Node deleteNode(Node root, int key)
+    public void deleteNode(int key){
+        this.root = this.deleteNode(this.root, key);
+    }
+    private Node deleteNode(Node root, int key)
     {
         // Базовая проверка
         if (root == null)
@@ -239,31 +248,31 @@ class AVLTree
         if (root == null)  return root;
 
         // Обновляем высоту
-        root.height = max(height(root.left), height(root.right)) + 1;
+        root.height = Math.max(height(root.left), height(root.right)) + 1;
 
         // Проверяем,что дерево сбалансированно
-        int balance = ifBalanced(root);
+        int balance = root.ifBalanced();
 
         // Влево Влево
-        if (balance > 1 && ifBalanced(root.left) >= 0)
-            return rotateRight(root);
+        if (balance > 1 && root.left.ifBalanced() >= 0)
+            return root.rotateRight();
 
         // Влево Вправо
-        if (balance > 1 && ifBalanced(root.left) < 0)
+        if (balance > 1 && root.left.ifBalanced() < 0)
         {
-            root.left = rotateLeft(root.left);
-            return rotateRight(root);
+            root.left = root.left.rotateLeft();
+            return root.rotateRight();
         }
 
         // Вправо Вправо
-        if (balance < -1 && ifBalanced(root.right) <= 0)
-            return rotateLeft(root);
+        if (balance < -1 && root.right.ifBalanced() <= 0)
+            return root.rotateLeft();
 
         // Вправо Влево
-        if (balance < -1 && ifBalanced(root.right) > 0)
+        if (balance < -1 && root.right.ifBalanced() > 0)
         {
-            root.right = rotateRight(root.right);
-            return rotateLeft(root);
+            root.right = root.right.rotateRight();
+            return root.rotateLeft();
         }
 
         return root;

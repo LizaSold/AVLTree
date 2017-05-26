@@ -9,6 +9,7 @@ import java.util.SortedSet;
 
 import static org.junit.Assert.*;
 
+
 public class AVLTreeTest {
     @org.junit.After
     public void tearDown() throws Exception {
@@ -18,26 +19,26 @@ public class AVLTreeTest {
     @org.junit.Test
     public void height() throws Exception {
         AVLTree tree = new AVLTree();
-        tree.root = tree.add(tree.root, 1);
-        tree.root = tree.add(tree.root, 20);
-        tree.root = tree.add(tree.root, 3);
+        tree.add(1);
+        tree.add(20);
+        tree.add(3);
 
         //  3
         // 1  20
 
 
-        assertEquals(tree.height(tree.root), 2);
+        assertEquals(tree.height(), 2);
 
-        tree.root = tree.add(tree.root, 4);
-        tree.root = tree.add(tree.root, 19);
-        tree.root = tree.add(tree.root, 3); //уже есть, не изменит высоту
+        tree.add(4);
+        tree.add(19);
+        tree.add(3); //уже есть, не изменит высоту
 
         //   3
         // 1   19
         //  4    20
 
 
-        assertEquals(tree.height(tree.root), 3);
+        assertEquals(tree.height(), 3);
 
 
     }
@@ -46,18 +47,18 @@ public class AVLTreeTest {
     public void getSortedSet() throws Exception {
 
         AVLTree tree = new AVLTree();
-        tree.root = tree.add(tree.root, 1);
-        tree.root = tree.add(tree.root, 20);
-        tree.root = tree.add(tree.root, 3);
+        tree.add(1);
+        tree.add(20);
+        tree.add(3);
 
 
 
-        tree.root = tree.add(tree.root, 4);
-        tree.root = tree.add(tree.root, 19);
-        tree.root = tree.add(tree.root, 3);
+        tree.add(4);
+        tree.add(19);
+        tree.add(3);
 
 
-        SortedSet<Integer> r = tree.getSortedSet(tree.root);
+        SortedSet<Integer> r = tree.getSortedSet();
         assertEquals((int) r.first(), 1);
         assertEquals( (int)  r.last(), 20);
 
@@ -67,35 +68,35 @@ public class AVLTreeTest {
     @org.junit.Test
     public void add() throws Exception {
         AVLTree tree = new AVLTree();
-        tree.root = tree.add(tree.root, 1); //+1
-        tree.root = tree.add(tree.root, 20); //+1
-        tree.root = tree.add(tree.root, 3); //+1
-        assertEquals(tree.countElements(tree.root), 3); //Проверяем на количество
+        tree.add(1); //+1
+        tree.add(20); //+1
+        tree.add(3); //+1
+        assertEquals(tree.countElements(), 3); //Проверяем на количество
 
-        assertEquals( Math.abs(tree.ifBalanced(tree.root)), 0); //Проверяем на балланс (AVL), ветви должны быть одинаковые
-
-
-        assertTrue(tree.contains(tree.root, 3));
-        assertTrue(tree.contains(tree.root, 1));
-        assertFalse(tree.contains(tree.root, 9));
+        assertEquals( Math.abs(tree.ifBalanced()), 0); //Проверяем на баланс (AVL), должны ветви быть одинаковые
 
 
-        tree.root = tree.add(tree.root, 1); //Уже есть
-        tree.root = tree.add(tree.root, 4); //+1
-        tree.root = tree.add(tree.root, 3); //Уже есть
-        assertEquals(tree.countElements(tree.root), 4); //Проверяем на колимчество
-
-        assertTrue(tree.contains(tree.root, 3));
-        assertTrue(tree.contains(tree.root, 4));
-        assertFalse(tree.contains(tree.root, 9));
-
-        assertEquals( Math.abs(tree.ifBalanced(tree.root)), 1); //Проверяем на баланс (AVL), должна одна ветвь быть длинее на 1
+        assertTrue(tree.contains(3));
+        assertTrue(tree.contains(1));
+        assertFalse(tree.contains(9));
 
 
-        tree.root = tree.add(tree.root, 10);
-        tree.root = tree.add(tree.root, 11);
-        tree.root = tree.add(tree.root, 12);
-        assertEquals( Math.abs(tree.ifBalanced(tree.root)), 0); //Проверяем на баланс (AVL), должны ветви быть одинаковые
+        tree.add(1); //Уже есть
+        tree.add(4); //+1
+        tree.add(3); //Уже есть
+        assertEquals(tree.countElements(), 4); //Проверяем на количество
+
+        assertTrue(tree.contains(3));
+        assertTrue(tree.contains(4));
+        assertFalse(tree.contains(9));
+
+        assertEquals( Math.abs(tree.ifBalanced()), 1); //Проверяем на баланс (AVL), должна одна ветвь быть длинее на 1
+
+
+        tree.add(10);
+        tree.add(11);
+        tree.add(12);
+        assertEquals( Math.abs(tree.ifBalanced()), 0); //Проверяем на баланс (AVL), должны ветви быть одинаковые
 
 
 
@@ -105,25 +106,25 @@ public class AVLTreeTest {
     @org.junit.Test
     public void deleteNode() throws Exception {
         AVLTree tree = new AVLTree();
-        tree.root = tree.add(tree.root, 1); //+1
-        tree.root = tree.add(tree.root, 20); //+1
-        tree.root = tree.add(tree.root, 3); //+1
+        tree.add(1); //+1
+        tree.add(20); //+1
+        tree.add(3); //+1
 
-        assertTrue(tree.contains(tree.root, 3));
-        tree.deleteNode(tree.root, 3);
-        assertFalse(tree.contains(tree.root, 3));
+        assertTrue(tree.contains(3));
+        tree.deleteNode(3);
+        assertFalse(tree.contains(3));
 
-        assertEquals( Math.abs(tree.ifBalanced(tree.root)), 1);//Проверяем на баланс (AVL), должна одна ветвь быть длинее на 1
-        assertEquals(tree.countElements(tree.root), 2); //Проверяем на колимчество
+        assertEquals( Math.abs(tree.ifBalanced()), 1);//Проверяем на баланс (AVL), должна одна ветвь быть длинее на 1
+        assertEquals(tree.countElements(), 2); //Проверяем на количество
 
-        tree.root = tree.add(tree.root, 10);
-        tree.root = tree.add(tree.root, 11);
-        tree.root = tree.add(tree.root, 12);
+        tree.add(10);
+        tree.add(11);
+        tree.add(12);
 
-        assertEquals( Math.abs(tree.ifBalanced(tree.root)), 1); //Проверяем на баланс (AVL), должна одна ветвь быть длинее на 1
-        tree.deleteNode(tree.root, 10);
-        assertEquals( Math.abs(tree.ifBalanced(tree.root)), 1); //Проверяем на баланс (AVL), должна одна ветвь быть длинее на 1
-        assertEquals(tree.countElements(tree.root), 4); //Проверяем на колимчество
+        assertEquals( Math.abs(tree.ifBalanced()), 1); //Проверяем на баланс (AVL), должна одна ветвь быть длинее на 1
+        tree.deleteNode(10);
+        assertEquals( Math.abs(tree.ifBalanced()), 1); //Проверяем на баланс (AVL), должна одна ветвь быть длинее на 1
+        assertEquals(tree.countElements(), 4); //Проверяем на количество
 
 
     }
