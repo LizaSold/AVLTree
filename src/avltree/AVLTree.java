@@ -5,17 +5,133 @@
  */
 package avltree;
 
-import java.util.Random;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 // Программа AVL дерево
 // Позволяет добавлять и удалять узлы графа
 
 
 
 
-public class AVLTree
+public class AVLTree implements Set<Integer>
 {
+
+    @Override
+    public int size() {
+        return countElements();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return root == null;
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        return this.contains(this.root, (Integer) o);
+    }
+
+    @Override
+    public Iterator<Integer> iterator() {
+        Iterator<Integer> it = new Iterator<Integer>() {
+
+            private int currentIndex = 0;
+
+            @Override
+            public boolean hasNext() {
+                return currentIndex < size() && toArray()[currentIndex] != null;
+            }
+
+            @Override
+            public Integer next() {
+                return (Integer) toArray()[currentIndex++];
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
+        return it;
+
+    }
+
+    @Override
+    public Object[] toArray() {
+
+        ArrayList BSTarray = new ArrayList();
+        makeArray(root,  BSTarray);
+        return BSTarray.toArray();
+    }
+
+    private void makeArray(Node node, ArrayList BSTarray ) {
+        if (node != null) {
+            BSTarray.add(node.key);
+            makeArray(node.left, BSTarray);
+            makeArray(node.right, BSTarray);
+        }
+    }
+
+    @Override
+    public <T> T[] toArray(T[] a) {
+        return null;
+    }
+
+
+    @Override
+    public boolean add(Integer integer) {
+        this.root = this.add(this.root, integer);
+        return true;
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        this.root = this.deleteNode(this.root, (Integer) o);
+        return true;
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        Object r;
+        for (Iterator iterator = c.iterator(); iterator.hasNext();) {
+            r = iterator.next();
+           if(!contains(r)) return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends Integer> c) {
+        Object r;
+        for (Iterator iterator = c.iterator(); iterator.hasNext();) {
+            r = iterator.next();
+            this.root = add(root, (int) r);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        Object[] r = toArray();
+        for (int i = 0; i < r.length; ++i) {
+            if(!c.contains(r[i])){
+                remove(r[i]);
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        for (Iterator iterator = c.iterator(); iterator.hasNext();) {
+            this.root = this.deleteNode(this.root, (int) iterator.next());
+        }
+        return true;
+    }
+
+    @Override
+    public void clear() {
+        root = null;
+    }
 
     private class Node
     {
@@ -109,6 +225,7 @@ public class AVLTree
 
 
     public int countElements(){
+        if(root==null) return 0;
         return this.root.countElements();
     }
     public int ifBalanced(){
@@ -116,26 +233,7 @@ public class AVLTree
     }
 
 
-    public void addToSorderdSet(SortedSet<Integer> r, Node n){
-        if (n != null) {
-            r.add(n.key);
-            if(n.left != null) addToSorderdSet(r, n.left);
 
-            if(n.right != null) addToSorderdSet(r, n.right);
-
-        }
-    }
-    public SortedSet<Integer> getSortedSet(){
-        SortedSet<Integer> r = new TreeSet<>();
-        if (this.root != null) {
-            addToSorderdSet(r, this.root);
-        }
-        return r;
-    }
-
-    boolean contains( int key){
-       return this.contains(this.root, key);
-    }
 
     boolean contains(Node n, int key){
         if(n == null) return false;
@@ -144,9 +242,7 @@ public class AVLTree
     }
 
 
-    void add(int key){
-        this.root = this.add(this.root, key);
-    }
+
 
 
     Node add(Node node, int key)
@@ -204,9 +300,7 @@ public class AVLTree
         return current;
     }
 
-    public void deleteNode(int key){
-        this.root = this.deleteNode(this.root, key);
-    }
+
     private Node deleteNode(Node root, int key)
     {
         // Базовая проверка
