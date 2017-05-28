@@ -79,14 +79,16 @@ public class AVLTree implements Set<Integer>
 
     @Override
     public boolean add(Integer integer) {
+        boolean contain = contains(integer);
         this.root = this.add(this.root, integer);
-        return true;
+        return !contain;
     }
 
     @Override
     public boolean remove(Object o) {
+        boolean contain = contains(o);
         this.root = this.deleteNode(this.root, (Integer) o);
-        return true;
+        return contain;
     }
 
     @Override
@@ -102,30 +104,38 @@ public class AVLTree implements Set<Integer>
     @Override
     public boolean addAll(Collection<? extends Integer> c) {
         Object r;
+        boolean contain = false;
         for (Iterator iterator = c.iterator(); iterator.hasNext();) {
             r = iterator.next();
+            if(!contains(r)) contain = true;
             this.root = add(root, (int) r);
         }
-        return true;
+        return contain;
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
         Object[] r = toArray();
+        boolean changed = false;
         for (int i = 0; i < r.length; ++i) {
             if(!c.contains(r[i])){
+                changed = true;
                 remove(r[i]);
             }
         }
-        return true;
+        return changed;
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
+        boolean changed = false;
+        int r;
         for (Iterator iterator = c.iterator(); iterator.hasNext();) {
-            this.root = this.deleteNode(this.root, (int) iterator.next());
+            r = (int) iterator.next();
+            if(contains(r)) changed = true;
+            this.root = this.deleteNode(this.root, r);
         }
-        return true;
+        return changed;
     }
 
     @Override
